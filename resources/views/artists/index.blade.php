@@ -6,7 +6,9 @@
 </head>
 <body>
     @foreach($artists as $artist)
-    <a href="{{ route('artists.show', ['id' => $artist['id']]) }}"><p>{{ $artist['name'] }}</p></a>
+    <div style="margin-bottom:12px;">
+        <a href="{{ route('artists.show', ['id' => $artist['id']]) }}"><strong>{{ $artist['name'] }}</strong></a>
+    </div>
     @endforeach
 </body>
 </html>

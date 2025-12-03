@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('content')
 <div class="container">
-    <a href="{{ route('artists.index') }}" class="btn btn-secondary mb-3">Back to artists</a>
+    
 
     <div class="card">
         <div class="card-header">
@@ -26,4 +23,3 @@
         </div>
     </div>
 </div>
-@endsection

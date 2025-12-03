@@ -48,7 +48,7 @@ class ArtistController extends Controller
     public function show($id)
     {
         try {
-            $response = Http::api()->get("/artists/$id");
+            $response = Http::api()->get("artist/$id");
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
@@ -58,7 +58,12 @@ class ArtistController extends Controller
             }
 
             $body = $response->body();
-            $entity = $body['artist'] ?? null;
+            if (strpos($body, '<{') === 0) {
+                $body = substr($body, 1);
+            }
+            
+            $data = json_decode($body, true);
+            $entity = $data['artist'] ?? $data;
 
             if (!$entity) {
                 return redirect()
@@ -66,7 +71,7 @@ class ArtistController extends Controller
                     ->with('error', "Couldn't get artist data.");
             }
 
-            return view('artists.show', ['entity' => $entity]);
+            return view('artists.show', ['artist' => (object)$entity]);
 
         } catch (\Exception $e) {
             return redirect()
@@ -109,7 +114,7 @@ class ArtistController extends Controller
 
     public function edit($id){
         try {
-            $response = Http::api()->get("/artists/$id");
+            $response = Http::api()->get("artists/$id");
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
@@ -118,8 +123,13 @@ class ArtistController extends Controller
                     ->with('error', "Error: $message");
             } 
             
-            $body = $response->json();
-            $entity = $body['artist'] ?? null;
+            $body = $response->body();
+            if (strpos($body, '<{') === 0) {
+                $body = substr($body, 1);
+            }
+            
+            $data = json_decode($body, true);
+            $entity = $data['artist'] ?? $data;
 
             if(!$entity){
                 return redirect()
