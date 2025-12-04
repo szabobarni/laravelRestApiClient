@@ -44,6 +44,78 @@ class ArtistController extends Controller
                 ->with('error', "Couldn't load the artists: " . $e->getMessage());
         }
     }
+    public function showAlbums($id)
+    {
+         try {
+            $response = Http::api()->get("artist/$id/albums");
+
+            if ($response->failed()) {
+                $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
+                return redirect()
+                    ->route('artists.show')
+                    ->with('error', "Error: $message");
+            }
+
+            $body = $response->body();
+            if (strpos($body, '<{') === 0) {
+                $body = substr($body, 1);
+            }
+            
+            $data = json_decode($body, true);
+            $albums = $data['albums'] ?? $data;
+
+            if (!$albums) {
+                return redirect()
+                    ->route('artists.show')
+                    ->with('error', "Couldn't get artist's albums.");
+            }
+
+            return view('artists.albums', ['albums' => (object)$albums]);
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('artists.show')
+                ->with('error', "Couldn't get artist data: " . $e->getMessage());
+        }
+    } 
+     public function showSongs($artist_id,$id)
+    {
+         try {
+            $response = Http::api()->get("/artist/$artist_id/album/$id/songs");
+
+            /*echo "Status: " . $response->status() . "<br>";
+            echo "Body: " . htmlspecialchars(substr($response->body(), 0, 1000)) . "<br>";
+            die;*/
+
+            if ($response->failed()) {
+                $message = $response->json('message') ?? 'Couldn\'t retrieve album\'s songs.';
+                return redirect()
+                    ->route('artists.albums')
+                    ->with('error', "Error: $message");
+            }
+
+            $body = $response->body();
+            if (strpos($body, '<{') === 0) {
+                $body = substr($body, 1);
+            }
+            
+            $data = json_decode($body, true);
+            $entity = $data['songs'] ?? $data;
+
+            if (!$entity) {
+                return redirect()
+                    ->route('artists.albums')
+                    ->with('error', "Couldn't get album's songs.");
+            }
+
+            return view('artists.songs', ['songs' => (object)$entity]);
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('artists.albums')
+                ->with('error', "Couldn't get album's songs: " . $e->getMessage());
+        }
+    } 
 
     public function show($id)
     {
