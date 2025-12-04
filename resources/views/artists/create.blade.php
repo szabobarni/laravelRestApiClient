@@ -1,3 +1,4 @@
+<title>New Artist</title>
 <h2>New Artist</h2>
 <form action="{{ route('artists.store') }}" method="POST">
     @csrf

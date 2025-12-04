@@ -267,11 +267,10 @@ class ArtistController extends Controller
     {
         try {
             $response = Http::api()
-                ->withToken($this->token)
-                ->delete("/artists/$id", ['id' => $id]);
+                ->delete("artist/$id");
 
             if ($response->failed()) {
-                $message = $response->json('message') ?? 'Coudln\'t delete artist.';
+                $message = $response->json('message') ?? 'Couldn\'t delete artist.';
                 return redirect()
                     ->route('artists.index')
                     ->with('error', "Error: $message");

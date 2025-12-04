@@ -1,3 +1,4 @@
+<title>Edit Profile</title>
 <h2>Edit Profile</h2>
 <form action="{{ route('artists.update', ['id' => $artist['id']]) }}" method="POST">
     @csrf
