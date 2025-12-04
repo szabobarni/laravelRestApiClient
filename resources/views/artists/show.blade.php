@@ -3,7 +3,8 @@
 
     <div class="card">
         <div class="card-header">
-            <h2>{{ $artist->name ?? 'Artist' }}</h2><a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a>
+            <h2>{{ $artist->name ?? 'Artist' }}   <a href="{{ route('artists.edit', ['id' => $artist->id]) }}"><button>Edit</button></a></h2
+            ><a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a
         </div>
 
         <div class="card-body">

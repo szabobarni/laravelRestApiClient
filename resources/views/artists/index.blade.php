@@ -5,6 +5,7 @@
     <title>Artists</title>
 </head>
 <body>
+    <a href="{{ route('artists.create') }}"><button>New artist</button></a>
     @foreach($artists as $artist)
     <div style="margin-bottom:12px;">
         <a href="{{ route('artists.show', ['id' => $artist['id']]) }}"><strong>{{ $artist['name'] }}</strong></a>

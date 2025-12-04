@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\ArtistRequest;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\ResponseHelper;
 
@@ -44,6 +45,42 @@ class ArtistController extends Controller
                 ->with('error', "Couldn't load the artists: " . $e->getMessage());
         }
     }
+
+    public function show($id)
+    {
+        try {
+            $response = Http::api()->get("artist/$id");
+
+            if ($response->failed()) {
+                $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
+                return redirect()
+                    ->route('artists.index')
+                    ->with('error', "Error: $message");
+            }
+
+            $body = $response->body();
+            if (strpos($body, '<{') === 0) {
+                $body = substr($body, 1);
+            }
+            
+            $data = json_decode($body, true);
+            $entity = $data['artist'] ?? $data;
+
+            if (!$entity) {
+                return redirect()
+                    ->route('artists.index')
+                    ->with('error', "Couldn't get artist data.");
+            }
+
+            return view('artists.show', ['artist' => (object)$entity]);
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('artists.index')
+                ->with('error', "Couldn't get artist data: " . $e->getMessage());
+        }
+    }
+
     public function showAlbums($id)
     {
          try {
@@ -78,7 +115,8 @@ class ArtistController extends Controller
                 ->with('error', "Couldn't get artist data: " . $e->getMessage());
         }
     } 
-     public function showSongs($artist_id,$id)
+
+    public function showSongs($artist_id,$id)
     {
          try {
             $response = Http::api()->get("/artist/$artist_id/album/$id/songs");
@@ -117,54 +155,28 @@ class ArtistController extends Controller
         }
     } 
 
-    public function show($id)
-    {
-        try {
-            $response = Http::api()->get("artist/$id");
-
-            if ($response->failed()) {
-                $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
-                return redirect()
-                    ->route('artists.index')
-                    ->with('error', "Error: $message");
-            }
-
-            $body = $response->body();
-            if (strpos($body, '<{') === 0) {
-                $body = substr($body, 1);
-            }
-            
-            $data = json_decode($body, true);
-            $entity = $data['artist'] ?? $data;
-
-            if (!$entity) {
-                return redirect()
-                    ->route('artists.index')
-                    ->with('error', "Couldn't get artist data.");
-            }
-
-            return view('artists.show', ['artist' => (object)$entity]);
-
-        } catch (\Exception $e) {
-            return redirect()
-                ->route('artists.index')
-                ->with('error', "Couldn't get artist data: " . $e->getMessage());
-        }
-    }
-
     public function create()
     {
         return view('artists.create');
     }
 
-    public function store(Request $request)
+    public function store(ArtistRequest $request)
     {
         $name = $request->get('name');
+        $nationality = $request->get('nationality');
+        $image = $request->get('image');
+        $description = $request->get('description');
+        $is_band = $request->get('is_band');
 
         try {
             $response = Http::api()
-                ->withToken($this->token)
-                ->post('/artists', ['name' => $name]);
+                ->post('artist', [
+                    'name' => $name,
+                    'nationality' => $nationality,
+                    'image' => $image,
+                    'description' => $description,
+                    'is_band' => $is_band
+                ]);
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'Couldn\'t create artist.';
@@ -186,7 +198,7 @@ class ArtistController extends Controller
 
     public function edit($id){
         try {
-            $response = Http::api()->get("artists/$id");
+            $response = Http::api()->get("artist/$id");
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'Couldn\'t retrieve artist data.';
@@ -209,7 +221,7 @@ class ArtistController extends Controller
                     ->with('error', "Couldn't get artist data.");
             }
 
-            return view('artists.edit', ['entity' => $entity]);
+            return view('artists.edit', ['artist' => $entity]);
         } catch(\Exception $e){
             return redirect()
                 ->route('artists.index')
@@ -217,29 +229,37 @@ class ArtistController extends Controller
         }
     }
     
-    public function update(Request $request, $id)
+    public function update(ArtistRequest $request, $id)
     {
         $name = $request->get('name');
+        $nationality = $request->get('nationality');
+        $image = $request->get('image');
+        $description = $request->get('description');
 
         try {
             $response = Http::api()
                 ->withToken($this->token)
-                ->put("/artists/$id", ['name' => $name]);
+                ->patch("artist/$id", [
+                    'name' => $name,
+                    'nationality' => $nationality,
+                    'image' => $image,
+                    'description' => $description
+                ]);
 
             if ($response->successful()) {
                 return redirect()
-                    ->route('artists.index')
+                    ->route('artists.show', ['id' => $id])
                     ->with('success', "$name successfully updated!");
             }
 
             $errorMessage = $response->json('message') ?? 'Unknown error.';
             return redirect()
-                ->route('artists.index')
+                ->route('artists.show', ['id' => $id])
                 ->with('error', "Error: $errorMessage");
 
         } catch (\Exception $e) {
             return redirect()
-                ->route('artists.index')
+                ->route('artists.show', ['id' => $id])
                 ->with('error', "Couldn't update: " . $e->getMessage());
         }
     }
