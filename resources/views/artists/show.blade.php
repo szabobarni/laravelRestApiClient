@@ -1,12 +1,9 @@
-@extends('layouts.app')
-
-@section('content')
+<title>{{ $artist->name }}</title>
 <div class="container">
-    <a href="{{ route('artists.index') }}" class="btn btn-secondary mb-3">Back to artists</a>
-
     <div class="card">
         <div class="card-header">
-            <h2>{{ $artist->name ?? 'Artist' }}</h2>
+            <h2>{{ $artist->name ?? 'Artist' }}   <a href="{{ route('artists.edit', ['id' => $artist->id]) }}"><button>Edit</button></a></h2
+            ><a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a
         </div>
 
         <div class="card-body">
@@ -26,4 +23,3 @@
         </div>
     </div>
 </div>
-@endsection

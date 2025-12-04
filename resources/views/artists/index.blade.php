@@ -5,8 +5,16 @@
     <title>Artists</title>
 </head>
 <body>
+    <a href="{{ route('artists.create') }}"><button>New artist</button></a>
     @foreach($artists as $artist)
-    <a href="{{ route('artists.show', ['id' => $artist['id']]) }}"><p>{{ $artist['name'] }}</p></a>
+    <div style="margin-bottom:12px;">
+        <a href="{{ route('artists.show', ['id' => $artist['id']]) }}"><strong>{{ $artist['name'] }}</strong></a>
+        <form action="{{ route('artists.destroy', ['id' => $artist['id']]) }}" method="POST" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" onclick="return confirm('Are you sure you want to delete them?')">delete</button>
+        </form>
+    </div>
     @endforeach
 </body>
 </html>
