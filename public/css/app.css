@@ -1,0 +1,183 @@
+/* Melode Dark Purple Theme */
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #141414; /* darker charcoal */
+    color: white;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    height: 100vh;
+    background: #141414;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dark overlay */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Content */
+.content {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+}
+
+.title {
+    font-size: 5rem;
+    font-weight: 800;
+    color: #6b21a8; /* darker purple */
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+    color: #d8d8d8;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 260px;
+    margin: 0 auto;
+}
+
+.btn {
+    padding: 14px 20px;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+/* Login button */
+.btn.login {
+    background: #6b21a8; /* deep purple */
+    color: black;
+}
+
+.btn.login:hover {
+    background: #9333ea; /* brighter but still dark */
+}
+
+/* Register button */
+.btn.register {
+    background: transparent;
+    border: 2px solid #6b21a8;
+    color: #6b21a8;
+}
+
+.btn.register:hover {
+    background: #6b21a8;
+    color: black;
+}
+
+/* Continue without login */
+.continue {
+    margin-top: 10px;
+    color: #b8b8b8;
+    font-size: 0.95rem;
+    text-decoration: underline;
+}
+
+.continue:hover {
+    color: white;
+}
+
+/* Auth Pages (Login & Register) */
+.auth-body {
+    background: #141414;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth-container {
+    background: #1c1c1c; /* slightly lighter than body */
+    padding: 40px;
+    width: 380px;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.55);
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #6b21a8;
+    margin-bottom: 10px;
+}
+
+.auth-subtitle {
+    color: #cfcfcf;
+    margin-bottom: 30px;
+}
+
+.auth-input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.auth-input-group label {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.auth-input-group input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+    font-size: 1rem;
+}
+
+.auth-input-group input:focus {
+    outline: 2px solid #6b21a8;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: #6b21a8;
+    color: black;
+    font-weight: bold;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: 0.2s;
+}
+
+.auth-btn:hover {
+    background: #9333ea;
+}
+
+.auth-link {
+    margin-top: 15px;
+    color: #b8b8b8;
+}
+
+.auth-link a {
+    color: #a855f7; /* lighter purple accent */
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}

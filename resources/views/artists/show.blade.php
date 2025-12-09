@@ -1,9 +1,20 @@
+<x-app-layout>
+    <x-slot name="header">
+        <link rel="stylesheet" href="{{ asset('css/artists.css') }}">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Artists') }}
+        </h2>
+    </x-slot>
 <title>{{ $artist->name }}</title>
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h2>{{ $artist->name ?? 'Artist' }}   <a href="{{ route('artists.edit', ['id' => $artist->id]) }}"><button>Edit</button></a></h2
-            ><a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a
+            <h2>{{ $artist->name ?? 'Artist' }}
+            @auth
+            <a href="{{ route('artists.edit', ['id' => $artist->id]) }}"><button>Edit</button></a>
+            @endauth
+            </h2>
+            <a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a
         </div>
 
         <div class="card-body">
@@ -23,3 +34,4 @@
         </div>
     </div>
 </div>
+</x-app-layout>
