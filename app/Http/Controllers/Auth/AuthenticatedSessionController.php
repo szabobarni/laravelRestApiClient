@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,39 +26,40 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $response = Http::api()->post('/user/login', [
+        $response = Http::api()->post('/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
 
-        if ($response->successful()) {
-            $responseBody = json_decode($response->body());
-            if (empty($responseBody->data)) {
-                return back()->withErrors([
-                    'message' => $responseBody->message
-                ]);
-            }
-            session([
-                'api_token' => $responseBody->data->token,
-                'user_name' => $responseBody->data->name,
-                'user_email' => $responseBody->data->email,
-            ]);
-
-            return redirect()->intended('/');
+        if (! $response->successful() || ! isset($response['user']['token'])) {
+            return back()->withErrors(['email' => 'Invalid API response.']);
         }
 
-        return back()->withErrors([
-            'message' => 'Hibás bejelentkezési adatok.',
+        $user = User::updateOrCreate(
+            ['email' => $response['user']['email']],
+            ['name' => $response['user']['email']]
+        );
+
+        session([
+            'api_token' => $response['user']['token'],
+            'api_user_id' => $response['user']['id'],
         ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard');
     }
+
+
+
 
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {
-       session()->forget(['api_token', 'user_name', 'user_email']);
-
-       return redirect('/');
+        session()->forget(['api_token', 'user_name', 'user_email']);
+        Auth::logout();
+        return redirect('/');
     }
 }

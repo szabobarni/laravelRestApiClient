@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\ArtistRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use App\Helpers\ResponseHelper;
 
 class ArtistController extends Controller
@@ -170,6 +171,7 @@ class ArtistController extends Controller
 
         try {
             $response = Http::api()
+                ->withToken(session('api_token'))
                 ->post('artist', [
                     'name' => $name,
                     'nationality' => $nationality,
@@ -238,7 +240,7 @@ class ArtistController extends Controller
 
         try {
             $response = Http::api()
-                ->withToken($this->token)
+                ->withToken(session('api_token'))
                 ->patch("artist/$id", [
                     'name' => $name,
                     'nationality' => $nationality,
@@ -267,6 +269,7 @@ class ArtistController extends Controller
     {
         try {
             $response = Http::api()
+                ->withToken(session('api_token'))
                 ->delete("artist/$id");
 
             if ($response->failed()) {

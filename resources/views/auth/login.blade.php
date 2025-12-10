@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Melodex — Login</title>
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 
 <body class="auth-body">
+
+@if($errors->any())
+    <div style="color:red; margin-bottom: 10px;">
+        {{ $errors->first('message') }}
+    </div>
+@endif
+
 
     <div class="auth-container">
         <h1 class="auth-title">Welcome Back</h1>
