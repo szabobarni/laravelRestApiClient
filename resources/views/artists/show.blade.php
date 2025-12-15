@@ -15,6 +15,8 @@
                     <a href="{{ route('artists.edit', ['id' => $artist->id]) }}"><button>Edit</button></a>
                 @endauth
                 <a href="{{ route('artists.albums', ['id' => $artist->id]) }}"><button>Albums</button></a>
+                <a href="{{ route('artists.export', ['id' => $artist->id, 'format' => 'pdf']) }}"><button>Export PDF</button></a>
+                <a href="{{ route('artists.export', ['id' => $artist->id, 'format' => 'csv']) }}"><button>Export CSV</button></a>
             </div>
             <div class="card-body">
                 <h5>Description</h5>

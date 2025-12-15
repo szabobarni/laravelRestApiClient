@@ -8,6 +8,10 @@ use App\Http\Requests\ArtistRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\ResponseHelper;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ArtistExport;
+use Illuminate\Support\Str;
 
 class ArtistController extends Controller
 {
@@ -291,5 +295,115 @@ class ArtistController extends Controller
                 ->route('artists.index')
                 ->with('error', "Couldn't communicate with the API: " . $e->getMessage());
         }
+    }
+
+    public function exportAlbumsSongs($id, $format = 'pdf')
+    {
+        try {
+            // Get artist info
+            $artistResponse = Http::api()->get("artist/$id");
+            if ($artistResponse->failed()) {
+                return redirect()
+                    ->route('artists.show', ['id' => $id])
+                    ->with('error', "Couldn't retrieve artist data.");
+            }
+
+            $artistBody = $artistResponse->body();
+            if (strpos($artistBody, '<{') === 0) {
+                $artistBody = substr($artistBody, 1);
+            }
+            $artistData = json_decode($artistBody, true);
+            $artist = $artistData['artist'] ?? $artistData;
+
+            // Get albums
+            $albumsResponse = Http::api()->get("artist/$id/albums");
+            if ($albumsResponse->failed()) {
+                return redirect()
+                    ->route('artists.show', ['id' => $id])
+                    ->with('error', "Couldn't retrieve albums.");
+            }
+
+            $albumsBody = $albumsResponse->body();
+            if (strpos($albumsBody, '<{') === 0) {
+                $albumsBody = substr($albumsBody, 1);
+            }
+            $albumsData = json_decode($albumsBody, true);
+            $albums = $albumsData['albums'] ?? $albumsData;
+
+            // Get songs for each album
+            $albumsWithSongs = [];
+            foreach ($albums as $album) {
+                $songsResponse = Http::api()->get("/artist/$id/album/{$album['id']}/songs");
+                if ($songsResponse->successful()) {
+                    $songsBody = $songsResponse->body();
+                    if (strpos($songsBody, '<{') === 0) {
+                        $songsBody = substr($songsBody, 1);
+                    }
+                    $songsData = json_decode($songsBody, true);
+                    $album['songs'] = $songsData['songs'] ?? [];
+                } else {
+                    $album['songs'] = [];
+                }
+                $albumsWithSongs[] = $album;
+            }
+
+            if ($format === 'pdf') {
+                return $this->generatePDF($artist, $albumsWithSongs);
+            } else {
+                return $this->generateCSV($artist, $albumsWithSongs);
+            }
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('artists.show', ['id' => $id])
+                ->with('error', "Couldn't export data: " . $e->getMessage());
+        }
+    }
+
+    private function generatePDF($artist, $albums)
+    {
+        $html = view('exports.albums-songs-pdf', [
+            'artist' => $artist,
+            'albums' => $albums
+        ])->render();
+
+        $pdf = Pdf::loadHTML($html);
+        $filename = Str::slug($artist['name'] ?? 'artist') . '_albums_songs_' . date('Y-m-d') . '.pdf';
+        
+        return $pdf->download($filename);
+    }
+
+    private function generateCSV($artist, $albums)
+    {
+        $filename = Str::slug($artist['name'] ?? 'artist') . '_albums_songs_' . date('Y-m-d') . '.csv';
+        
+        return response()->streamDownload(function () use ($artist, $albums) {
+            $output = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($output, ['Artist: ' . ($artist['name'] ?? 'Unknown')]);
+            fputcsv($output, ['Nationality: ' . ($artist['nationality'] ?? 'N/A')]);
+            fputcsv($output, []);
+            
+            fputcsv($output, ['Album Name', 'Song Name']);
+            fputcsv($output, []);
+            
+            // Add album and song data
+            foreach ($albums as $album) {
+                $albumName = $album['name'] ?? 'Unknown Album';
+                if (!empty($album['songs'])) {
+                    foreach ($album['songs'] as $song) {
+                        fputcsv($output, [$albumName, $song['name'] ?? 'Unknown Song']);
+                    }
+                } else {
+                    fputcsv($output, [$albumName, '']);
+                }
+            }
+            
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }
