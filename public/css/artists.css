@@ -1,0 +1,104 @@
+/* Page Background */
+body {
+    margin: 0;
+    padding: 0;
+    background: #141414;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: white;
+}
+
+/* Header Title (inside x-app-layout) */
+header h2 {
+    color: #6b21a8 !important;
+    font-weight: 800;
+}
+
+/* Container for the artists list */
+.artists-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* New Artist Button */
+.new-artist-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: #6b21a8;
+    color: black;
+    font-weight: bold;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: 0.2s ease;
+    margin-bottom: 25px;
+}
+
+.new-artist-btn:hover {
+    background: #9333ea;
+}
+
+/* Make the whole card clickable */
+.artist-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Artist Item (Clickable Card) */
+.artist-item {
+    background: #1c1c1c;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    transition: 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Hover effect */
+.artist-item:hover {
+    background: #242424;
+    transform: translateY(-2px);
+}
+
+/* Artist Image */
+.artist-item img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Artist Name */
+.artist-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #a855f7;
+    margin: 0;
+}
+
+/* Delete button aligned to the right */
+.delete-form {
+    margin-left: auto;
+}
+
+/* Delete Button */
+.delete-btn {
+    padding: 8px 14px;
+    background: transparent;
+    border: 2px solid #6b21a8;
+    color: #6b21a8;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #6b21a8;
+    color: black;
+}
